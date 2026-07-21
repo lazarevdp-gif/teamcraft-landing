@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Курс по командообразованию — Соберите команду, закрывающую KPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --dark:#2E3443;
+  --dark-2:#093230;
+  --gold:#BC9C69;
+  --gold-light:#ECCB96;
+  --gold-dark:#896847;
+  --bg-light:#F9F8F6;
+  --white:#fff;
+  --text:#2E3443;
+  --text-light:#857A66;
+  --radius-sm:8px;
+  --radius-md:16px;
+  --radius-lg:24px;
+  --radius-xl:32px;
+  --radius-fill:96px;
+  --shadow-lg:0 12px 40px rgba(9,50,48,.12);
+  --shadow-xl:0 24px 60px rgba(9,50,48,.18);
+  --font:'Montserrat',sans-serif;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font);color:var(--text);background:var(--bg-light);overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* Preloader */
+.preloader{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+.preloader.hide{opacity:0;visibility:hidden;pointer-events:none}
+.preloader__spinner{width:48px;height:48px;border:3px solid rgba(188,156,105,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Header */
+.header{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:all .4s}
+.header.scrolled{background:rgba(9,50,48,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:12px 0;box-shadow:0 4px 30px rgba(0,0,0,.15)}
+.header__inner{display:flex;align-items:center;justify-content:space-between}
+.header__logo{font-size:20px;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:1px}
+.header__nav{display:flex;gap:32px;align-items:center}
+.header__nav a{color:var(--white);text-decoration:none;font-size:14px;font-weight:500;opacity:.8;transition:opacity .3s}
+.header__nav a:hover{opacity:1}
+.header__cta{background:var(--gold);color:var(--dark);padding:12px 28px;border-radius:var(--radius-fill);font-weight:600;font-size:14px;text-decoration:none;transition:all .3s;border:2px solid var(--gold)}
+.header__cta:hover{background:transparent;color:var(--gold)}
+
+/* Hero */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;background:linear-gradient(160deg,var(--dark-2) 0%,var(--dark) 50%,#1a2530 100%);overflow:hidden}
+.hero__bg{position:absolute;inset:0;opacity:.15}
+.hero__bg-circle{position:absolute;border-radius:50%;filter:blur(80px)}
+.hero__bg-circle--1{width:600px;height:600px;background:var(--gold);top:-200px;right:-100px;opacity:.3}
+.hero__bg-circle--2{width:400px;height:400px;background:var(--gold-light);bottom:-100px;left:-100px;opacity:.2}
+.hero__bg-circle--3{width:300px;height:300px;background:var(--gold-dark);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.15}
+.hero__grid{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(188,156,105,.06) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(188,156,105,.06) 1px,transparent 1px);
+  background-size:60px 60px}
+.hero__content{position:relative;z-index:2;max-width:800px}
+.hero__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(188,156,105,.12);border:1px solid rgba(188,156,105,.25);border-radius:var(--radius-fill);padding:8px 20px;margin-bottom:32px;font-size:13px;font-weight:600;color:var(--gold-light);text-transform:uppercase;letter-spacing:1.5px}
+.hero__badge::before{content:'';width:8px;height:8px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+.hero__title{font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--white);line-height:1.2;margin-bottom:24px;letter-spacing:-0.5px}
+.hero__title span{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero__courses{margin-bottom:28px;display:flex;flex-direction:column;gap:4px;margin-left:-120px}
+.hero__courses-item{font-size:clamp(26px,3.8vw,44px);font-weight:900;line-height:1.15;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;white-space:nowrap}
+.hero__subtitle{font-size:clamp(16px,2vw,20px);color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:40px;max-width:600px;font-weight:400}
+.hero__buttons{display:flex;gap:16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:18px 40px;border-radius:var(--radius-fill);font-family:var(--font);font-size:16px;font-weight:600;text-decoration:none;transition:all .4s cubic-bezier(.25,.46,.45,.94);border:none;cursor:pointer;position:relative;overflow:hidden}
+.btn--primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--dark);box-shadow:0 8px 32px rgba(188,156,105,.35)}
+.btn--primary:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(188,156,105,.45)}
+.btn--primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .6s}
+.btn--primary:hover::after{transform:translateX(100%)}
+.btn--outline{background:transparent;color:var(--gold);border:2px solid rgba(188,156,105,.4)}
+.btn--outline:hover{border-color:var(--gold);background:rgba(188,156,105,.08);transform:translateY(-2px)}
+
+.hero__stats{display:flex;gap:48px;margin-top:64px;padding-top:40px;border-top:1px solid rgba(188,156,105,.15)}
+.hero__stat-num{font-size:36px;font-weight:800;color:var(--gold)}
+.hero__stat-label{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:500}
+
+.hero__visual{position:absolute;right:-60px;top:50%;transform:translateY(-50%);width:500px;height:500px;opacity:.08}
+.hero__visual-ring{position:absolute;border:2px solid var(--gold);border-radius:50%;animation:spin 20s linear infinite}
+.hero__visual-ring:nth-child(1){inset:0}
+.hero__visual-ring:nth-child(2){inset:40px;animation-direction:reverse;animation-duration:15s}
+.hero__visual-ring:nth-child(3){inset:80px;animation-duration:25s}
+
+/* Sections */
+.section{padding:120px 0;position:relative}
+.section--dark{background:linear-gradient(180deg,var(--dark-2),var(--dark));color:var(--white)}
+.section--light{background:var(--bg-light)}
+.section--gradient{background:linear-gradient(180deg,var(--dark) 0%,var(--bg-light) 100%)}
+.section__label{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.section__label::before{content:'';width:32px;height:2px;background:var(--gold);border-radius:1px}
+.section__title{font-size:clamp(32px,4.5vw,52px);font-weight:800;line-height:1.15;letter-spacing:-0.5px;margin-bottom:20px}
+.section--dark .section__title{color:var(--white)}
+.section--light .section__title{color:var(--text)}
+.section__desc{font-size:18px;line-height:1.7;max-width:640px;font-weight:400}
+.section--dark .section__desc{color:rgba(255,255,255,.6)}
+.section--light .section__desc{color:var(--text-light)}
+
+/* Glass Cards */
+.glass{background:rgba(255,255,255,.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-lg);padding:40px;transition:all .4s cubic-bezier(.25,.46,.45,.94)}
+.glass:hover{background:rgba(255,255,255,.1);border-color:rgba(188,156,105,.3);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.glass--light{background:rgba(255,255,255,.7);border:1px solid rgba(188,156,105,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.glass--light:hover{background:rgba(255,255,255,.9);border-color:rgba(188,156,105,.3);transform:translateY(-4px);box-shadow:var(--shadow-xl)}
+
+/* Pain Section */
+.pain__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.pain__card{position:relative;overflow:hidden}
+.pain__card-icon{width:56px;height:56px;border-radius:var(--radius-md);background:rgba(188,156,105,.12);display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:24px;transition:all .4s}
+.pain__card:hover .pain__card-icon{background:var(--gold);transform:scale(1.1)}
+.pain__card-num{position:absolute;top:20px;right:24px;font-size:64px;font-weight:900;color:rgba(188,156,105,.06);line-height:1;pointer-events:none}
+.pain__card-title{font-size:20px;font-weight:700;margin-bottom:12px;color:var(--white)}
+.pain__card-text{font-size:15px;line-height:1.7;color:rgba(255,255,255,.55)}
+.pain__card-result{margin-top:20px;padding-top:16px;border-top:1px solid rgba(188,156,105,.15);font-size:14px;font-weight:600;color:var(--gold-light);display:flex;align-items:center;gap:8px}
+
+/* Solution Section */
+.solution__steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.solution__step{position:relative;padding:48px 36px;text-align:center}
+.solution__step-num{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--dark);margin:0 auto 28px;box-shadow:0 8px 24px rgba(188,156,105,.3)}
+.solution__step-title{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.solution__step-text{font-size:15px;line-height:1.7;color:var(--text-light)}
+.solution__step-tag{display:inline-block;margin-top:20px;background:rgba(188,156,105,.1);color:var(--gold-dark);padding:8px 20px;border-radius:var(--radius-fill);font-size:13px;font-weight:600}
+
+/* Offer Section */
+.offer__wrapper{position:relative;margin-top:60px}
+.offer__main{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:stretch}
+.offer__card{padding:48px;display:flex;flex-direction:column}
+.offer__card--highlight{background:linear-gradient(160deg,rgba(188,156,105,.15),rgba(188,156,105,.05));border:2px solid rgba(188,156,105,.3)}
+.offer__card-header{margin-bottom:32px}
+.offer__card-badge{display:inline-block;background:var(--gold);color:var(--dark);padding:6px 16px;border-radius:var(--radius-fill);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.offer__card-title{font-size:28px;font-weight:800;color:var(--white)}
+.offer__features{list-style:none;display:flex;flex-direction:column;gap:16px;flex:1}
+.offer__features li{display:flex;align-items:flex-start;gap:14px;font-size:15px;line-height:1.6;color:rgba(255,255,255,.7)}
+.offer__features li::before{content:'';flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(188,156,105,.15);display:flex;align-items:center;justify-content:center;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23BC9C69' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");background-size:14px;background-repeat:no-repeat;background-position:center}
+.offer__price{margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.1)}
+.offer__price-old{font-size:18px;color:rgba(255,255,255,.35);text-decoration:line-through;margin-bottom:4px}
+.offer__price-current{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+.offer__price-note{font-size:14px;color:rgba(255,255,255,.5);margin-top:4px}
+.offer__card .btn{margin-top:auto;width:100%;justify-content:center}
+.offer__deadline{text-align:center;margin-top:40px;padding:24px;border-radius:var(--radius-lg);background:rgba(240,68,56,.08);border:1px solid rgba(240,68,56,.2)}
+.offer__deadline-text{font-size:16px;color:rgba(255,255,255,.7);font-weight:500}
+.offer__deadline-text strong{color:#f04438;font-weight:700}
+
+/* CTA Section */
+.cta{padding:120px 0;text-align:center;background:linear-gradient(160deg,var(--dark-2),var(--dark));position:relative;overflow:hidden}
+.cta__bg{position:absolute;inset:0;opacity:.05}
+.cta__bg-orb{position:absolute;border-radius:50%;filter:blur(100px)}
+.cta__bg-orb--1{width:500px;height:500px;background:var(--gold);top:-200px;left:50%;transform:translateX(-50%)}
+.cta__content{position:relative;z-index:2}
+.cta__title{font-size:clamp(32px,5vw,56px);font-weight:800;color:var(--white);margin-bottom:20px}
+.cta__title span{background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta__subtitle{font-size:18px;color:rgba(255,255,255,.55);margin-bottom:48px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta__buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta__micro{margin-top:24px;font-size:13px;color:rgba(255,255,255,.4);line-height:1.7}
+.cta__micro a{color:var(--gold-light);text-decoration:none;border-bottom:1px solid rgba(236,203,150,.3);transition:border-color .3s}
+.cta__micro a:hover{border-color:var(--gold-light)}
+
+/* Footer */
+.footer{padding:40px 0;background:var(--dark-2);text-align:center;border-top:1px solid rgba(188,156,105,.1)}
+.footer__text{font-size:13px;color:rgba(255,255,255,.3)}
+
+/* Photo blocks */
+.photo-band{position:relative;width:100%;height:400px;overflow:hidden}
+.photo-band img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.photo-band:hover img{transform:scale(1.03)}
+.photo-band__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,50,48,.5) 0%,rgba(9,50,48,.3) 50%,rgba(9,50,48,.5) 100%);pointer-events:none}
+.photo-band__text{position:absolute;bottom:40px;left:0;right:0;text-align:center;z-index:2}
+.photo-band__text h3{font-size:28px;font-weight:700;color:var(--white);text-shadow:0 2px 20px rgba(0,0,0,.3)}
+
+.solution__visual{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;margin-top:48px}
+.solution__visual-img{border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/3;position:relative}
+.solution__visual-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.solution__visual-img:hover img{transform:scale(1.04)}
+.solution__visual-img::after{content:'';position:absolute;inset:0;border:1px solid rgba(188,156,105,.2);border-radius:var(--radius-lg);pointer-events:none}
+.solution__visual-text{padding:20px 0}
+.solution__visual-text h3{font-size:22px;font-weight:700;color:var(--text);margin-bottom:12px}
+.solution__visual-text p{font-size:15px;line-height:1.7;color:var(--text-light)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(9,50,48,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .4s;padding:24px}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal{background:linear-gradient(160deg,#1a2a28,#0f1f1d);border:1px solid rgba(188,156,105,.2);border-radius:var(--radius-lg);padding:48px;max-width:480px;width:100%;position:relative;transform:translateY(30px) scale(.95);transition:all .4s cubic-bezier(.25,.46,.45,.94);box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.modal-overlay.active .modal{transform:translateY(0) scale(1)}
+.modal__close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;color:rgba(255,255,255,.5);font-size:20px}
+.modal__close:hover{background:rgba(255,255,255,.12);color:var(--white)}
+.modal__title{font-size:24px;font-weight:800;color:var(--white);margin-bottom:8px}
+.modal__subtitle{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px;line-height:1.6}
+.form{display:flex;flex-direction:column;gap:16px}
+.form__group{position:relative}
+.form__input{width:100%;padding:16px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-md);color:var(--white);font-family:var(--font);font-size:15px;transition:all .3s;outline:none}
+.form__input::placeholder{color:rgba(255,255,255,.3)}
+.form__input:focus{border-color:var(--gold);background:rgba(188,156,105,.06);box-shadow:0 0 0 3px rgba(188,156,105,.1)}
+.form__input.error{border-color:#f04438}
+.form__error{font-size:12px;color:#f04438;margin-top:6px;display:none}
+.form__input.error ~ .form__error{display:block}
+.form__checkbox{display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-top:8px}
+.form__checkbox input{display:none}
+.form__checkbox-mark{flex-shrink:0;width:20px;height:20px;border:2px solid rgba(255,255,255,.2);border-radius:5px;margin-top:1px;transition:all .3s;display:flex;align-items:center;justify-content:center}
+.form__checkbox input:checked ~ .form__checkbox-mark{background:var(--gold);border-color:var(--gold)}
+.form__checkbox input:checked ~ .form__checkbox-mark::after{content:'';width:10px;height:6px;border-left:2px solid var(--dark);border-bottom:2px solid var(--dark);transform:rotate(-45deg);margin-top:-2px}
+.form__checkbox-text{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6}
+.form__checkbox-text a{color:var(--gold-light);text-decoration:none;border-bottom:1px solid rgba(236,203,150,.2)}
+.form__submit{margin-top:8px}
+.form__submit .btn{width:100%;justify-content:center}
+.form__success{display:none;text-align:center;padding:40px 0}
+.form__success.show{display:block}
+.form__success-icon{width:64px;height:64px;border-radius:50%;background:rgba(18,183,106,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.form__success-title{font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+.form__success-text{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+
+/* Animations */
+.reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-left{opacity:0;transform:translateX(-60px);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(60px);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(.9);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+
+/* Parallax layer */
+[data-parallax]{will-change:transform;transition:transform .1s linear}
+
+/* Smooth counter animation */
+.counter{display:inline-block}
+
+/* Marquee */
+.marquee{overflow:hidden;padding:20px 0;border-top:1px solid rgba(188,156,105,.1);border-bottom:1px solid rgba(188,156,105,.1)}
+.marquee__inner{display:flex;gap:48px;animation:marquee 30s linear infinite;width:max-content}
+.marquee__item{font-size:14px;font-weight:600;color:rgba(255,255,255,.25);white-space:nowrap;text-transform:uppercase;letter-spacing:3px}
+.marquee__item span{color:var(--gold);margin:0 12px}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Mobile */
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px}
+.burger span{width:24px;height:2px;background:var(--white);border-radius:2px;transition:all .3s}
+@media(max-width:900px){
+  .hero__stats{gap:24px;flex-wrap:wrap}
+  .pain__grid,.solution__steps{grid-template-columns:1fr}
+  .offer__main{grid-template-columns:1fr}
+  .header__nav{display:none}
+  .burger{display:flex}
+  .hero__visual{display:none}
+}
+@media(max-width:600px){
+  .hero__buttons{flex-direction:column}
+  .btn{width:100%;justify-content:center}
+  .section{padding:80px 0}
+  .hero__stats{flex-direction:column;gap:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader">
+  <div class="preloader__spinner"></div>
+</div>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="container">
+    <div class="header__inner">
+      <a href="#" class="header__logo">TEAMCRAFT</a>
+      <nav class="header__nav">
+        <a href="#pain">Проблемы</a>
+        <a href="#solution">Программа</a>
+        <a href="#offer">Курс</a>
+        <a href="#cta" class="header__cta">Забронировать курс</a>
+      </nav>
+      <div class="burger" onclick="document.querySelector('.header__nav').classList.toggle('show')">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero__bg">
+    <div class="hero__bg-circle hero__bg-circle--1" data-parallax="0.15"></div>
+    <div class="hero__bg-circle hero__bg-circle--2" data-parallax="0.1"></div>
+    <div class="hero__bg-circle hero__bg-circle--3" data-parallax="0.08"></div>
+    <div class="hero__grid"></div>
+  </div>
+  <div class="container">
+    <div class="hero__content">
+      <div class="hero__badge reveal">Интенсив для руководителей</div>
+      <div class="hero__courses reveal">
+        <div class="hero__courses-item">Эффективная команда</div>
+        <div class="hero__courses-item">Проблемы делегирования в команде</div>
+        <div class="hero__courses-item">Страшные болезни команды</div>
+      </div>
+      <h1 class="hero__title reveal reveal-delay-1">Соберите из разрозненных отделов <span>единую команду</span>, которая закрывает KPI</h1>
+      <p class="hero__subtitle reveal reveal-delay-2">Интенсив для руководителей, уставших от микроменеджмента и срывов дедлайнов. Без воды и мотивационных речей — только диагностика и настройка реальных рабочих связок внутри вашего бизнеса.</p>
+      <div class="hero__buttons reveal reveal-delay-3">
+        <a href="#" class="btn btn--primary" onclick="openModal(event)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Забронировать место
+        </a>
+        <a href="#solution" class="btn btn--outline">Смотреть программу</a>
+      </div>
+      <div class="hero__stats reveal reveal-delay-4">
+        <div>
+          <div class="hero__stat-num counter" data-target="5">0</div>
+          <div class="hero__stat-label">занятий</div>
+        </div>
+        <div>
+          <div class="hero__stat-num counter" data-target="120">0</div>
+          <div class="hero__stat-label">часов стратегии</div>
+        </div>
+        <div>
+          <div class="hero__stat-num counter" data-target="347">0</div>
+          <div class="hero__stat-label">команд прошли</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero__visual" data-parallax="0.05">
+    <div class="hero__visual-ring"></div>
+    <div class="hero__visual-ring"></div>
+    <div class="hero__visual-ring"></div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee">
+  <div class="marquee__inner">
+    <div class="marquee__item">Командообразование <span>&bull;</span></div>
+    <div class="marquee__item">SLA между отделами <span>&bull;</span></div>
+    <div class="marquee__item">Матрица решений <span>&bull;</span></div>
+    <div class="marquee__item">Каскадирование целей <span>&bull;</span></div>
+    <div class="marquee__item">Делегирование <span>&bull;</span></div>
+    <div class="marquee__item">Командный договор <span>&bull;</span></div>
+    <div class="marquee__item">Командообразование <span>&bull;</span></div>
+    <div class="marquee__item">SLA между отделами <span>&bull;</span></div>
+    <div class="marquee__item">Матрица решений <span>&bull;</span></div>
+    <div class="marquee__item">Каскадирование целей <span>&bull;</span></div>
+    <div class="marquee__item">Делегирование <span>&bull;</span></div>
+    <div class="marquee__item">Командный договор <span>&bull;</span></div>
+  </div>
+</div>
+
+<!-- Pain Section -->
+<section class="section section--dark" id="pain">
+  <div class="container">
+    <div class="section__label reveal">Боли руководителя</div>
+    <h2 class="section__title reveal reveal-delay-1">Знакомые ситуации, которые каждый месяц<br>стоят вашей компании <span style="color:var(--gold)">миллионов</span></h2>
+    <p class="section__desc reveal reveal-delay-2">Эти проблемы знакомы каждому второму руководителю. Каждый день они съедают ваше время, деньги и нервы.</p>
+    <div class="pain__grid">
+      <div class="glass glass--light pain__card reveal reveal-delay-1">
+        <div class="pain__card-num">01</div>
+        <div class="pain__card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+        </div>
+        <h3 class="pain__card-title">Отделы как лебедь, рак и щука</h3>
+        <p class="pain__card-text">Продажи обещают клиентам золотые горы, а производство не успевает и срывает сроки.</p>
+        <div class="pain__card-result">Итог: вы теряете 20-30% маржи на переделках и штрафах</div>
+      </div>
+      <div class="glass glass--light pain__card reveal reveal-delay-2">
+        <div class="pain__card-num">02</div>
+        <div class="pain__card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <h3 class="pain__card-title">4 часа в день на тушение пожаров</h3>
+        <p class="pain__card-text">Постоянные согласования между менеджерами и разбор полётов вместо стратегии.</p>
+        <div class="pain__card-result">Итог: ключевые сотрудники выгорают и уносят базу клиентов</div>
+      </div>
+      <div class="glass glass--light pain__card reveal reveal-delay-3">
+        <div class="pain__card-num">03</div>
+        <div class="pain__card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <h3 class="pain__card-title">На планёрках кивают, в курилке саботируют</h3>
+        <p class="pain__card-text">Новые стратегии спускаются сверху, но на местах их игнорируют.</p>
+        <div class="pain__card-result">Итог: месяцы на внедрение изменений, которые разбиваются о хаос</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Photo transition -->
+<div class="photo-band reveal-scale">
+  <img src="foto 1.jpg" alt="Командная работа">
+  <div class="photo-band__overlay"></div>
+  <div class="photo-band__text">
+    <h3>Превратите хаос в систему</h3>
+  </div>
+</div>
+
+<!-- Solution Section -->
+<section class="section section--light" id="solution">
+  <div class="container">
+    <div class="section__label reveal">Программа курса</div>
+    <h2 class="section__title reveal reveal-delay-1">Как мы это исправим<br>за <span style="color:var(--gold-dark)">5 занятий</span></h2>
+    <p class="section__desc reveal reveal-delay-2">Практический курс, после которого ваша команда заработает как единый механизм.</p>
+    <div class="solution__visual reveal">
+      <div class="solution__visual-img">
+        <img src="foto 2.jpg" alt="Работа команды">
+      </div>
+      <div class="solution__visual-text">
+        <h3>Практика с вашей реальной командой</h3>
+        <p>Мы работаем не с теорией, а с вашими 실제ными процессами, конфликтами и задачами. Каждое занятие — это шаг к тому, чтобы отделы перестали работать друг против друга и начали работать на общий результат.</p>
+      </div>
+    </div>
+    <div class="solution__steps">
+      <div class="glass glass--light solution__step reveal reveal-delay-1">
+        <div class="solution__step-num">1</div>
+        <h3 class="solution__step-title">Кросс-функциональные регламенты и SLA</h3>
+        <p class="solution__step-text">Прозрачные точки передачи задач, где каждый знает свою зону ответственности</p>
+        <div class="solution__step-tag">Переделки → 0%</div>
+      </div>
+      <div class="glass glass--light solution__step reveal reveal-delay-2">
+        <div class="solution__step-num">2</div>
+        <h3 class="solution__step-title">Система делегирования и матрица решений</h3>
+        <p class="solution__step-text">15-20 часов в неделю освобождаются для стратегии, сотрудники берут ответственность</p>
+        <div class="solution__step-tag">+20 ч/неделю для стратегии</div>
+      </div>
+      <div class="glass glass--light solution__step reveal reveal-delay-3">
+        <div class="solution__step-num">3</div>
+        <h3 class="solution__step-title">Каскадирование целей и командный договор</h3>
+        <p class="solution__step-text">Команда переводит стратегию в личные KPI и ежедневно работает на общую прибыль</p>
+        <div class="solution__step-tag">Единая команда</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Offer Section -->
+<section class="section section--dark" id="offer">
+  <div class="container">
+    <div class="section__label reveal">Что входит в курс</div>
+    <h2 class="section__title reveal reveal-delay-1">Полный курс по сборке<br>высокоэффективной команды</h2>
+    <p class="section__desc reveal reveal-delay-2">Всё, что нужно для трансформации вашей команды — от диагностики до внедрения.</p>
+    <div class="offer__main">
+      <div class="glass offer__card reveal-left">
+        <div class="offer__card-header">
+          <h3 class="offer__card-title">Что вы получите</h3>
+        </div>
+        <ul class="offer__features">
+          <li>3 стратегические лекции для собственника и топ-менеджмента (архитектура команды, системы мотивации, зоны ответственности)</li>
+          <li>2 практические сессии командной работы с вашей реальной командой (конфликты, коммуникация, итоговый командный договор)</li>
+          <li>Готовые шаблоны и чек-листы (SLA, матрицы решений, регламенты), которые вы внедрите на следующий день</li>
+        </ul>
+      </div>
+      <div class="glass offer__card offer__card--highlight reveal-right">
+        <div class="offer__card-header">
+          <div class="offer__card-badge">Сезонное предложение</div>
+          <h3 class="offer__card-title">Специальная цена</h3>
+        </div>
+        <div class="offer__price">
+          <div class="offer__price-old">89 000 ₽</div>
+          <div class="offer__price-current">79 990 ₽</div>
+          <div class="offer__price-note">за курс до 15 человек · свыше 15 — цена обсуждается индивидуально</div>
+        </div>
+        <a href="#" class="btn btn--primary" style="margin-top:32px" onclick="openModal(event)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Забронировать за 79 990 ₽
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta" id="cta">
+  <div class="cta__bg">
+    <div class="cta__bg-orb cta__bg-orb--1" data-parallax="0.12"></div>
+  </div>
+  <div class="container">
+    <div class="cta__content">
+      <h2 class="cta__title reveal">Готовы собрать <span>команду мечты</span>?</h2>
+      <p class="cta__subtitle reveal reveal-delay-1">Забронируйте курс прямо сейчас и начните трансформацию вашей команды.</p>
+      <div class="cta__buttons reveal reveal-delay-2">
+        <a href="#" class="btn btn--primary" style="font-size:18px;padding:22px 48px" onclick="openModal(event)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Забронируй курс за 79 990 ₽
+        </a>
+      </div>
+      <p class="cta__micro reveal reveal-delay-3">До 15 человек, свыше — цена обсуждается. Сначала хотите познакомиться? Пройдите <a href="#">бесплатную экспресс-диагностику вашей команды за 30 минут</a>.</p>
+      <div class="cta__bonus reveal reveal-delay-4" style="margin-top:48px;padding:32px 40px;border:1px solid rgba(188,156,105,.25);border-radius:var(--radius-lg);background:rgba(188,156,105,.06);text-align:center">
+        <p style="font-size:18px;color:rgba(255,255,255,.7);line-height:1.7;max-width:700px;margin:0 auto">При покупке курса два дополнительных занятия <strong style="color:var(--gold-light)">«Проблемы делегирования в команде»</strong> и <strong style="color:var(--gold-light)">«Страшные болезни команды»</strong> по специальной цене — <strong style="color:var(--gold);font-size:22px">29 990 рублей</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal__close" onclick="closeModal()">&times;</div>
+    <div id="formContainer">
+      <h3 class="modal__title">Запишитесь на курс</h3>
+      <p class="modal__subtitle">Оставьте свои данные и мы свяжемся с вами для подтверждения бронирования</p>
+      <form class="form" id="courseForm" onsubmit="submitForm(event)">
+        <div class="form__group">
+          <input class="form__input" type="text" name="firstName" placeholder="Имя" required>
+          <div class="form__error">Пожалуйста, введите имя</div>
+        </div>
+        <div class="form__group">
+          <input class="form__input" type="text" name="lastName" placeholder="Фамилия" required>
+          <div class="form__error">Пожалуйста, введите фамилию</div>
+        </div>
+        <div class="form__group">
+          <input class="form__input" type="email" name="email" placeholder="E-mail" required>
+          <div class="form__error">Пожалуйста, введите корректный e-mail</div>
+        </div>
+        <label class="form__checkbox">
+          <input type="checkbox" name="consent" required>
+          <span class="form__checkbox-mark"></span>
+          <span class="form__checkbox-text">Я принимаю условия <a href="#">Политики в отношении обработки персональных данных</a> и даю согласие на обработку моих персональных данных. Я даю согласие на получение рекламных рассылок</span>
+        </label>
+        <div class="form__submit">
+          <button type="submit" class="btn btn--primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            Забронировать курс
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="form__success" id="formSuccess">
+      <div class="form__success-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#12b76a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h4 class="form__success-title">Заявка отправлена!</h4>
+      <p class="form__success-text">Мы свяжемся с вами в ближайшее время для подтверждения бронирования.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p class="footer__text">&copy; 2025 TEAMCRAFT. Все права защищены.</p>
+  </div>
+</footer>
+
+<script>
+// Preloader
+window.addEventListener('load',()=>{
+  setTimeout(()=>document.getElementById('preloader').classList.add('hide'),600);
+});
+
+// Header scroll
+const header=document.getElementById('header');
+let lastScroll=0;
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  header.classList.toggle('scrolled',y>60);
+  lastScroll=y;
+});
+
+// Intersection Observer for reveal animations
+const observerOptions={threshold:0.15,rootMargin:'0px 0px -40px 0px'};
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
+  });
+},observerOptions);
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el=>observer.observe(el));
+
+// Parallax on scroll
+const parallaxElements=document.querySelectorAll('[data-parallax]');
+function updateParallax(){
+  const scrollY=window.scrollY;
+  parallaxElements.forEach(el=>{
+    const speed=parseFloat(el.dataset.parallax);
+    const rect=el.getBoundingClientRect();
+    const offset=rect.top+scrollY;
+    const y=(scrollY-offset)*speed;
+    el.style.transform=`translate3d(0,${y}px,0)`;
+  });
+}
+window.addEventListener('scroll',updateParallax,{passive:true});
+
+// Counter animation
+const counterObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      const target=parseInt(el.dataset.target);
+      let current=0;
+      const duration=2000;
+      const step=timestamp=>{
+        if(!current)current=timestamp;
+        const progress=Math.min((timestamp-current)/duration,1);
+        const eased=1-Math.pow(1-progress,3);
+        el.textContent=Math.floor(eased*target);
+        if(progress<1)requestAnimationFrame(step);
+        else el.textContent=target;
+      };
+      requestAnimationFrame(step);
+      counterObserver.unobserve(el);
+    }
+  });
+},{threshold:0.5});
+document.querySelectorAll('.counter').forEach(el=>counterObserver.observe(el));
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const target=document.querySelector(a.getAttribute('href'));
+    if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+// Modal
+function openModal(e){
+  e.preventDefault();
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow='';
+}
+document.getElementById('modal').addEventListener('click',e=>{
+  if(e.target===e.currentTarget)closeModal();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+// Form submit — Google Apps Script
+const SCRIPT_URL='ВСТАВЬТЕ_СЮДА_URL_ВАШЕГО_GOOGLE_APPS_SCRIPT';
+
+async function submitForm(e){
+  e.preventDefault();
+  const form=e.target;
+  const data=new FormData(form);
+
+  if(!form.checkValidity()){
+    form.reportValidity();
+    return;
+  }
+
+  const btn=form.querySelector('button[type=submit]');
+  btn.disabled=true;
+  btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><circle cx="12" cy="12" r="10" stroke-dasharray="40" stroke-dashoffset="10"></circle></svg> Отправка...';
+
+  try{
+    await fetch(SCRIPT_URL,{
+      method:'POST',
+      body:data
+    });
+    document.getElementById('formContainer').style.display='none';
+    document.getElementById('formSuccess').classList.add('show');
+  }catch(err){
+    alert('Ошибка отправки. Попробуйте ещё раз.');
+    btn.disabled=false;
+    btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Забронировать курс';
+  }
+}
+</script>
+</body>
+</html>
